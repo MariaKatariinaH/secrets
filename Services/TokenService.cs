@@ -17,7 +17,7 @@ namespace AutentikaatioJaAutorisaatio.Services
                 new Claim(ClaimTypes.Name, username)
             };
 
-            //Rooiin perustuva claim:
+            //Rooliin perustuva claim:
             var roleClaim = isAdmin ? new Claim(ClaimTypes.Role, "Admin") : new Claim(ClaimTypes.Role, "User");
             claims.Add(roleClaim);
 
