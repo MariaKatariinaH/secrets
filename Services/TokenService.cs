@@ -7,24 +7,23 @@ namespace AutentikaatioJaAutorisaatio.Services
 {
     public class TokenService
     {
-        public string GenerateToken(string username, bool isAdmin)
+        private readonly IConfiguration _configuration;
+
+        public TokenService(IConfiguration configuration)
         {
-            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your_secret_key_that_is_at_least_32_bytes_long"));
+            _configuration = configuration;
+        }
+
+        public string GenerateToken()
+        {
+            var secretKeyString = _configuration("JwtSecretKey");
+            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKeyString));
             var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
-
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, username)
-            };
-
-            //Rooliin perustuva claim:
-            var roleClaim = isAdmin ? new Claim(ClaimTypes.Role, "Admin") : new Claim(ClaimTypes.Role, "User");
-            claims.Add(roleClaim);
 
             var tokeOptions = new JwtSecurityToken(
                 issuer: "MyTestAuthServer",
                 audience: "MyTestApiUsers",
-                claims: claims,
+                claims: new List<Claim>(),
                 expires: DateTime.Now.AddMinutes(30), // Token vanhenee 30 minuutin kuluttua
                 signingCredentials: signinCredentials
             );
