@@ -1,7 +1,9 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.NetworkInformation;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 
 namespace AutentikaatioJaAutorisaatio.Services
 {
@@ -16,11 +18,11 @@ namespace AutentikaatioJaAutorisaatio.Services
 
         public string GenerateToken()
         {
-            var secretKeyString = _configuration("JwtSecretKey");
+            var secretKeyString = _configuration["JwtSecretKey"];
             var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKeyString));
             var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
-            var tokeOptions = new JwtSecurityToken(
+            var tokenOptions = new JwtSecurityToken(
                 issuer: "MyTestAuthServer",
                 audience: "MyTestApiUsers",
                 claims: new List<Claim>(),
@@ -28,7 +30,7 @@ namespace AutentikaatioJaAutorisaatio.Services
                 signingCredentials: signinCredentials
             );
 
-            string tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
+            string tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
             return tokenString;
         }
     }
